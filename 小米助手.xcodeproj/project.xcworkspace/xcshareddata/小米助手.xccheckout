@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>D5534B40-91AD-4985-8CDA-6F123C00007C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>小米助手</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>ACBC86AE-E17D-4939-95D0-12572DD7DC04</key>
+		<string>http://www.svnchina.com/svn/xiaomizhushou</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>小米助手.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>ACBC86AE-E17D-4939-95D0-12572DD7DC04</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>ACBC86AE-E17D-4939-95D0-12572DD7DC04</key>
+		<string>http://www.svnchina.com/svn/xiaomizhushou</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>http://www.svnchina.com/svn/xiaomizhushou/%E5%B0%8F%E7%B1%B3%E5%8A%A9%E6%89%8B3.22/%E5%B0%8F%E7%B1%B3%E5%8A%A9%E6%89%8B.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>ACBC86AE-E17D-4939-95D0-12572DD7DC04</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>ACBC86AE-E17D-4939-95D0-12572DD7DC04</string>
+			<key>IDESourceControlWCCName</key>
+			<string>小米助手</string>
+		</dict>
+	</array>
+</dict>
+</plist>

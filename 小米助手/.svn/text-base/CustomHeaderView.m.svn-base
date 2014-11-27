@@ -1,0 +1,135 @@
+//
+//  CustomHeaderView.m
+//  TestMyCellF
+//
+//  Created by CC&DD on 14-3-26.
+//  Copyright (c) 2014年 袁仕崇. All rights reserved.
+//
+
+#import "CustomHeaderView.h"
+#import "skillImageView.h"
+#import "UIImageView+WebCache.h"
+
+#define kFontSize 13
+
+@implementation CustomHeaderView
+
+- (void)dealloc
+{
+    [_titleLabel release];
+    [_timeLabel release];
+    [_authorLabel release];
+    [_combatLabel release];
+    
+    [super dealloc];
+}
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code
+        [self initSubView];
+    }
+    return self;
+}
+- (void)initSubView
+{
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, 220, 20)];
+    [_titleLabel setTextColor:[UIColor blackColor]];
+    [_titleLabel setFont:[UIFont systemFontOfSize:kFontSize + 4]];
+    [self addSubview:_titleLabel];
+    
+    _timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(220, 5, 90, 20)];
+    [_timeLabel setTextColor:[UIColor blackColor]];
+    [_timeLabel setTextAlignment:NSTextAlignmentRight];
+    [_timeLabel setFont:[UIFont systemFontOfSize:kFontSize]];
+    [self addSubview:_timeLabel];
+    
+    UILabel *authorName = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, 50, 15)];
+    [authorName setTextColor:[UIColor blackColor]];
+    [authorName setText:@"作者:"];
+    [authorName setFont:[UIFont systemFontOfSize:kFontSize]];
+    [self addSubview:authorName];
+    [authorName release];
+    
+    _authorLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 30, 160, 15)];
+    [_authorLabel setTextColor:[UIColor blackColor]];
+    [_authorLabel setFont:[UIFont systemFontOfSize:kFontSize]];
+    [self addSubview:_authorLabel];
+
+    UILabel *comBatName = [[UILabel alloc] initWithFrame:CGRectMake(220, 30, 50, 15)];
+    [comBatName setText:@"战斗力:"];
+    [comBatName setFont:[UIFont systemFontOfSize:kFontSize]];
+    [self addSubview:comBatName];
+    [comBatName release];
+    
+    _combatLabel = [[UILabel alloc] initWithFrame:CGRectMake(270, 30, 40, 15)];
+    [_combatLabel setTextColor:[UIColor blackColor]];
+    [_combatLabel setFont:[UIFont systemFontOfSize:kFontSize]];
+    [_combatLabel setTextColor:[UIColor orangeColor]];
+    [_combatLabel setTextAlignment:NSTextAlignmentRight];
+    [self addSubview:_combatLabel];
+
+}
+
+- (void)setSkill:(NSArray *)skill
+{
+    if (_skill != skill) {
+        [_skill release];
+        _skill = [skill retain];
+    }
+
+}
+- (void)setSkillIconArray:(NSArray *)skillIconArray
+{
+    if (_skillIconArray != skillIconArray) {
+        [_skillIconArray release];
+        _skillIconArray = [skillIconArray retain];
+        [self loadSkillImageButton];
+    }
+}
+- (void)loadSkillImageButton
+{
+    for (int i = 0; i<6; i++) {
+        for (int j = 0; j<3; j++) {
+            skillImageView *skillImage = [[skillImageView alloc] initWithFrame:CGRectMake(10 +i*50, 50 + j * 50, 50, 50)];
+            [self addSubview:skillImage];
+            NSString *skill = [_skill objectAtIndex:i+j];
+            [skillImage.label setText:skill];
+            NSURL *url = [NSURL URLWithString:[self returnUrlWithSkill:skill]];
+            [skillImage.skillImage setImageWithURL:url];
+        }
+    }
+
+}
+- (NSString *)returnUrlWithSkill: (NSString *)skill
+{
+    if ([skill isEqualToString:@"Q"]) {
+        NSString *string = [_skillIconArray objectAtIndex:0];
+        return string;
+    }
+    if ([skill isEqualToString:@"W"]) {
+        NSString *string = [_skillIconArray objectAtIndex:1];
+        return string;
+    }
+    if ([skill isEqualToString:@"E"]) {
+        NSString *string = [_skillIconArray objectAtIndex:2];
+        return string;
+    }
+    else if([skill isEqualToString:@"R"])
+    {
+        NSString *string = [_skillIconArray objectAtIndex:3];
+        return string;
+    }
+    return nil;
+}
+/*
+// Only override drawRect: if you perform custom drawing.
+// An empty implementation adversely affects performance during animation.
+- (void)drawRect:(CGRect)rect
+{
+    // Drawing code
+}
+*/
+
+@end

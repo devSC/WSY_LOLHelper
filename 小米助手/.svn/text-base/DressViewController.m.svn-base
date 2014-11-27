@@ -1,0 +1,149 @@
+//
+//  DressViewController.m
+//  TestMyCellF
+//
+//  Created by CC&DD on 14-3-26.
+//  Copyright (c) 2014年 袁仕崇. All rights reserved.
+//
+
+#import "DressViewController.h"
+#import "TopView.h"
+#import "CustomHeaderView.h"
+#import "DressDetailModel.h"
+#import "BaseCell.h"
+#import "UIImageView+WebCache.h"
+
+@interface DressViewController ()
+
+@end
+
+@implementation DressViewController
+
+- (void)dealloc
+{
+    [_tableView release];
+    [_dataDic release];
+    [_skillArray release];
+    [_headerView release];
+    
+    [super dealloc];
+}
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    self.view.backgroundColor = [UIColor whiteColor];
+    TopView *topView = [[TopView alloc] initWithFrame:CGRectMake(0, 0, 320, 64)];
+    [self.view addSubview:topView];
+    [topView.backButton addTarget:self action:@selector(backButtonAction) forControlEvents:UIControlEventTouchUpInside];
+    [topView.topImageView setImageWithURL:[NSURL URLWithString:_topImageUrl]];
+    [topView release];
+    
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, 320, self.view.bounds.size.height - 64 - 44 -5)];
+    [_tableView setDelegate:self];
+    [_tableView setDataSource:self];
+    [self.view addSubview:_tableView];
+    _headerView = [[CustomHeaderView alloc] initWithFrame:CGRectMake(0, 0, 320, 200)];
+    _tableView.tableHeaderView = _headerView;
+    _tableView.tableFooterView.backgroundColor = [UIColor clearColor];
+    _headerView.backgroundColor = [UIColor clearColor];
+    [_tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    [self loadHeaderViewData];
+    _dataArray = [[self hardCode] retain];
+    
+}
+
+- (void)setDataDic:(NSDictionary *)dataDic
+{
+    if (_dataDic != dataDic) {
+        [_dataDic release];
+        _dataDic = [dataDic retain];
+        NSLog(@"%@", dataDic);
+    }
+}
+
+- (void)setSkillArray:(NSMutableArray *)skillArray
+{
+    if (_skillArray != skillArray) {
+        [_skillArray release];
+        _skillArray = [skillArray retain];
+    }
+}
+- (NSArray *)hardCode
+{
+    NSString *preExplain = [_dataDic objectForKey:@"pre_explain"];
+    NSArray *preCZ = [[_dataDic objectForKey:@"pre_cz"] componentsSeparatedByString:@","];
+    
+    NSString *midExplain = [_dataDic objectForKey:@"mid_explain"];
+    NSArray *midCZ = [[_dataDic objectForKey:@"mid_cz"] componentsSeparatedByString:@","];
+    
+    NSString *endExplain = [_dataDic objectForKey:@"end_explain"];
+    NSArray *endCZ = [[_dataDic objectForKey:@"end_cz"] componentsSeparatedByString:@","];
+    
+    NSString *nfExplain = [_dataDic objectForKey:@"nf_explain"];
+    NSArray *nfCZ = [[_dataDic objectForKey:@"nf_cz"] componentsSeparatedByString:@","];
+    DressDetailModel *detailModel = [[[DressDetailModel alloc] initWithNameString:@"前期出装" lowString:preExplain imageArray:preCZ] autorelease];
+    DressDetailModel *detailModel1 = [[[DressDetailModel alloc] initWithNameString:@"中期出装" lowString:midExplain imageArray:midCZ] autorelease];
+    DressDetailModel *detailModel2 = [[[DressDetailModel alloc] initWithNameString:@"后期超神装" lowString:endExplain imageArray:endCZ] autorelease];
+    DressDetailModel *detailModel3 = [[[DressDetailModel alloc] initWithNameString:@"逆风超神装" lowString:nfExplain imageArray:nfCZ] autorelease];
+    NSArray *array = [NSArray arrayWithObjects:detailModel, detailModel1, detailModel2, detailModel3, nil];
+    return [[array retain] autorelease];
+}
+
+- (void)loadHeaderViewData
+{
+    NSString *name = [_dataDic objectForKey:@"title"];
+    NSString *time = [_dataDic objectForKey:@"time"];
+    NSString *author = [_dataDic objectForKey:@"author"];
+    NSString *combat = [_dataDic objectForKey:@"combat"];
+    NSString *gameType = [NSString stringWithFormat:@"[%@] ", [_dataDic objectForKey:@"game_type"]];
+    NSString *nameStr = [gameType stringByAppendingString:name];
+    [_headerView.titleLabel setText:nameStr];
+    [_headerView.timeLabel setText:time];
+    [_headerView.authorLabel setText:author];
+    [_headerView.combatLabel setText:combat];
+    NSString *skill = [_dataDic objectForKey:@"skill"];
+    [_headerView setSkill:[skill componentsSeparatedByString:@","]];
+    [_headerView setSkillIconArray:_skillArray];
+    
+}
+
+
+
+#pragma mark backButtonAction
+- (void)backButtonAction
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+#pragma mark - tableView delegate method
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+//    NSIndexPath *oldIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:0];
+//    BaseCell *newCell = [tableView cellForRowAtIndexPath:indexPath];
+//    newCell.accessoryType = UITabBarSystemItemSearch;
+//    [newCell setSelected:NO];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    BaseCell *cell = [self tableView:_tableView cellForRowAtIndexPath:indexPath];
+    return cell.frame.size.height;
+}
+
+
+
+@end

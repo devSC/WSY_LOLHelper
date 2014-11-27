@@ -1,0 +1,199 @@
+//
+//  UserUnderView.m
+//  小米助手
+//
+//  Created by CC&DD on 14-3-18.
+//  Copyright (c) 2014年 袁仕崇. All rights reserved.
+//
+
+#import "UserUnderView.h"
+#import "UserCustomCell.h"
+#import "NetAPI.h"
+#import "WXBaseModel.h"
+#import "JSONKit.h"
+
+@implementation UserUnderView
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        // Initialization code
+    }
+    return self;
+}
+
++ (UserUnderView *)initUnderView
+{
+    return [[[NSBundle mainBundle] loadNibNamed:@"UserUnderView" owner:self options:nil] firstObject];
+}
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    self.dataArray = [NSMutableArray array];
+    [self.tableView setDataSource:self];
+    [self.tableView setDelegate:self];
+    self.tableView.scrollEnabled = NO;
+    [self newThred];
+
+}
+- (void)newThred
+{
+    [NSThread detachNewThreadSelector:@selector(hardCode) toTarget:self withObject:nil];
+}
+//组装数据
+- (void)hardCode
+{
+    NSString *name = [_array objectAtIndex:0];
+    NSString *server = [_array objectAtIndex:1];
+    NSString *codeString = [NetAPI stingWithName:name serverString:server];
+    NSDictionary *dic = [codeString objectFromJSONString];
+    NSDictionary *userDic = [dic objectForKey:name];
+    NSDictionary *normalDic = [WXBaseModel getUserNormalWithOriginalDic:userDic];
+    NSDictionary *warzonDic = [WXBaseModel getUserWarzoneWithOriginalDic:userDic];
+    NSDictionary *rankDic = [WXBaseModel getUserRankedWithOriginalDic:userDic];
+    NSDictionary *warzonDicDetail = [warzonDic objectForKey:@"R_S_5"];
+    NSArray *array = @[warzonDicDetail, rankDic];
+    NSDictionary *botDic = [WXBaseModel getUserBotWithOriginalDic:userDic];
+    NSDictionary *aramDic = [WXBaseModel getUserAramWithOriginalDic:userDic];
+    
+    self.dataArray = [NSMutableArray arrayWithObjects:array, normalDic, aramDic, botDic,  nil];
+
+    [self performSelectorOnMainThread:@selector(showData) withObject:nil waitUntilDone:NO];
+}
+
+- (void)showData
+{
+    [self.tableView reloadData];
+}
+
+
+#pragma mark - 
+#pragma mark - tableView delegate and dateSource method
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return _dataArray.count;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *cellIdentifier = @"Cell";
+    UserCustomCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (cell == nil) {
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"UserCustomCell" owner:self options:nil] firstObject];
+    }
+    NSArray *array = [self userInfoWithRow:indexPath.row];
+    cell.typical.text = [array objectAtIndex:0];
+    cell.userW.text = [array objectAtIndex:1];
+    cell.userLo.text = [array objectAtIndex:2];
+    cell.userOdds.text = [array objectAtIndex:3];
+    if ([[array objectAtIndex:4] isEqualToString:@"0"]) {
+        cell.rankAndTier.text = nil;
+    }
+    else
+    {
+        cell.rankAndTier.text = [array objectAtIndex:4];
+    }
+    return cell;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 50.f;
+}
+
+- (NSArray *)userInfoWithRow: (Typical)rows
+{
+
+    switch (rows) {
+        case row:
+        {
+            return [self returnRankArrayWithRow:rows];
+        }
+            break;
+        case row1:
+        {
+            return [self returnNormalArrayWithRow:rows];
+        }
+            break;
+        case row2:
+        {
+            return [self returnArmaArrayWithRow:rows];
+        }
+            break;
+        case row3:
+        {
+            return [self returnBotArrayWithRow:rows];
+        }
+            break;
+        default:
+            break;
+    }
+    return nil;
+
+}
+- (NSArray *)returnRankArrayWithRow: (NSInteger)row
+{
+    NSArray *array = [self.dataArray objectAtIndex:0];
+    NSDictionary *dic = [array objectAtIndex:0];
+    NSDictionary *rankDic = [array objectAtIndex:1];
+    NSString *typical = @"5V5单双排";
+    NSString *userRank = [dic objectForKey:@"rank"];
+    NSString *userTier = [dic objectForKey:@"tier"];
+    NSString *userPoint = [dic objectForKey:@"league_points"];
+    NSString *userW = [rankDic objectForKey:@"R_S_5_w"];
+    NSString *userLo = [rankDic objectForKey:@"R_S_5_lo"];
+    NSString *rankString = [WXBaseModel returnUserRankAndTierWithRank:userRank tier:userTier point:userPoint];
+    CGFloat odds = userW.floatValue/(userLo.floatValue + userW.floatValue);
+    NSString *oddsString = [NSString stringWithFormat:@"%.3f", odds];
+    NSArray *arrays = @[typical, userW, userLo, oddsString, rankString];
+    return [[arrays retain] autorelease];
+}
+
+- (NSArray *)returnNormalArrayWithRow: (NSInteger)row
+{
+    NSDictionary *dic = [self.dataArray objectAtIndex:row];
+    NSString *typical = @"匹配";
+    NSString *userW = [dic objectForKey:@"w"];
+    NSString *userLo = [dic objectForKey:@"lo"];
+    CGFloat odds = userW.floatValue/(userLo.floatValue + userW.floatValue);
+    NSString *rankString = @"0";
+    NSString *oddsString = [NSString stringWithFormat:@"%.3f", odds];
+    NSArray *array = @[typical, userW, userLo, oddsString, rankString];
+    return [[array retain] autorelease];
+}
+
+- (NSArray *)returnArmaArrayWithRow: (NSInteger)row
+{
+    NSDictionary *dic = [self.dataArray objectAtIndex:row];
+    NSString *typical = @"极地大乱斗";
+    NSString *userW = [dic objectForKey:@"a_w"];
+    NSString *userLo = [dic objectForKey:@"a_lo"];
+    CGFloat odds = userW.floatValue/(userLo.floatValue + userW.floatValue);
+    NSString *rankString = @"0";
+    NSString *oddsString = [NSString stringWithFormat:@"%.3f", odds];
+    NSArray *array = @[typical, userW, userLo, oddsString, rankString];
+    return [[array retain] autorelease];
+
+}
+- (NSArray *)returnBotArrayWithRow: (NSInteger)row
+{
+    NSDictionary *dic = [self.dataArray objectAtIndex:row];
+    NSString *typical = @"人机对战";
+    NSString *userW = [dic objectForKey:@"b_w"];
+    NSString *userLo = [dic objectForKey:@"b_lo"];
+    CGFloat odds = userW.floatValue/(userLo.floatValue + userW.floatValue);
+    NSString *rankString = @"0";
+    NSString *oddsString = [NSString stringWithFormat:@"%.3f", odds];
+    NSArray *array = @[typical, userW, userLo, oddsString, rankString];
+    return [[array retain] autorelease];
+}
+
+- (void)dealloc {
+
+    [_dataArray release];
+    [_tableView release];
+    [super dealloc];
+}
+@end
